@@ -41,7 +41,7 @@ jobs:
       run: npx playwright test --project=${{ matrix.browser }} --reporter=allure-playwright
       env:
         CI: true
-        BASE_URL: https://demo.opencart.com
+        BASE_URL: https://demoqa.com
         
     - name: Upload test results
       uses: actions/upload-artifact@v4
@@ -56,7 +56,7 @@ jobs:
     - name: Generate Allure report
       if: always()
       run: |
-        npx allure generate allure-results --clean
+        npx allure generate allure-results
         npx allure open --port 8080 &
         sleep 10
         
@@ -140,7 +140,7 @@ jobs:
       run: npx playwright test --grep "Performance" --project=chromium
       env:
         CI: true
-        BASE_URL: https://demo.opencart.com
+        BASE_URL: https://demoqa.com
 
   notify:
     runs-on: ubuntu-latest
@@ -181,6 +181,6 @@ jobs:
         
     - name: Generate and deploy Allure report
       run: |
-        npx allure generate allure-results --clean
+        npx allure generate allure-results
         # Deploy to GitHub Pages or other hosting service
         # This is a placeholder for actual deployment logic 
