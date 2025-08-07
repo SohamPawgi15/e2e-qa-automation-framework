@@ -103,7 +103,7 @@ test.describe('DEMOQA Smoke Tests', () => {
     const viewports = [
       { width: 1920, height: 1080 }, // Desktop
       { width: 768, height: 1024 },  // Tablet
-      { width: 375, height: 667 }    // Mobile
+      { width: 375, height: 667 },    // Mobile
     ];
     
     for (const viewport of viewports) {

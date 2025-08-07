@@ -1,18 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { HomePage } from '@pages/home-page';
-import { CartPage } from '@pages/cart-page';
-import { ProductPage } from '@pages/product-page';
-import { TestDataGenerator, CustomAssertions, DataValidation } from '@utils/test-helpers';
 
 test.describe('DemoQA Form Tests', () => {
   let homePage: HomePage;
-  let cartPage: CartPage;
-  let productPage: ProductPage;
 
   test.beforeEach(async ({ page }) => {
     homePage = new HomePage(page);
-    cartPage = new CartPage(page);
-    productPage = new ProductPage(page);
     await homePage.navigateToHome();
   });
 
@@ -174,7 +167,7 @@ test.describe('DemoQA Form Tests', () => {
   });
 
   test.describe('Performance Tests', () => {
-    test('should load forms page within acceptable time', async ({ page }) => {
+    test('should load forms page within acceptable time', async ({ page: _page }) => {
       const startTime = Date.now();
       await homePage.navigateToCategory('Forms');
       await homePage.waitForPageLoad();

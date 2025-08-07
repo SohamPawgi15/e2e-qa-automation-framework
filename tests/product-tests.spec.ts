@@ -1,15 +1,12 @@
 import { test, expect } from '@playwright/test';
 import { HomePage } from '@pages/home-page';
-import { ProductPage } from '@pages/product-page';
-import { TestDataGenerator, CustomAssertions, DataValidation } from '@utils/test-helpers';
+import { CustomAssertions } from '@utils/test-helpers';
 
 test.describe('DemoQA Tests', () => {
   let homePage: HomePage;
-  let productPage: ProductPage;
 
   test.beforeEach(async ({ page }) => {
     homePage = new HomePage(page);
-    productPage = new ProductPage(page);
     await homePage.navigateToHome();
   });
 
@@ -19,18 +16,18 @@ test.describe('DemoQA Tests', () => {
       await expect(page).toHaveTitle(/DEMOQA/);
     });
 
-    test('should display category cards', async ({ page }) => {
+    test('should display category cards', async ({ page: _page }) => {
       const productsCount = await homePage.getFeaturedProductsCount();
       CustomAssertions.assertElementCountGreaterThan(productsCount, 0);
     });
 
-    test('should navigate to elements page', async ({ page }) => {
+    test('should navigate to elements page', async ({ page: _page }) => {
       await homePage.navigateToCategory('Elements');
       await homePage.waitForPageLoad();
       await homePage.assertUrl(/.*elements.*/);
     });
 
-    test('should navigate to forms page', async ({ page }) => {
+    test('should navigate to forms page', async ({ page: _page }) => {
       await homePage.navigateToCategory('Forms');
       await homePage.waitForPageLoad();
       await homePage.assertUrl(/.*forms.*/);
@@ -69,13 +66,13 @@ test.describe('DemoQA Tests', () => {
   });
 
   test.describe('Search Functionality', () => {
-    test('should search for elements', async ({ page }) => {
+    test('should search for elements', async ({ page: _page }) => {
       const searchTerm = 'Elements';
       await homePage.searchProduct(searchTerm);
       await homePage.waitForPageLoad();
     });
 
-    test('should handle search with no results', async ({ page }) => {
+    test('should handle search with no results', async ({ page: _page }) => {
       const searchTerm = 'NonExistentElement12345';
       await homePage.searchProduct(searchTerm);
       await homePage.waitForPageLoad();
@@ -83,7 +80,7 @@ test.describe('DemoQA Tests', () => {
   });
 
   test.describe('Navigation', () => {
-    test('should navigate to different sections', async ({ page }) => {
+    test('should navigate to different sections', async ({ page: _page }) => {
       const sections = ['Elements', 'Forms', 'Alerts, Frame & Windows', 'Widgets'];
       
       for (const section of sections) {
@@ -96,7 +93,7 @@ test.describe('DemoQA Tests', () => {
   });
 
   test.describe('Performance Tests', () => {
-    test('should load page within acceptable time', async ({ page }) => {
+    test('should load page within acceptable time', async ({ page: _page }) => {
       const startTime = Date.now();
       await homePage.navigateToHome();
       await homePage.waitForPageLoad();

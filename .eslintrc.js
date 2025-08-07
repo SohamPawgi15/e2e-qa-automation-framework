@@ -7,7 +7,7 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   extends: [
     'eslint:recommended',
-    '@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended',
   ],
   rules: {
     // TypeScript specific rules
@@ -16,7 +16,6 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-non-null-assertion': 'warn',
-    '@typescript-eslint/prefer-const': 'error',
     '@typescript-eslint/no-var-requires': 'error',
     
     // General rules
@@ -24,7 +23,6 @@ module.exports = {
     'no-debugger': 'error',
     'no-duplicate-imports': 'error',
     'no-unused-expressions': 'error',
-    'prefer-const': 'error',
     'no-var': 'error',
     
     // Code style
@@ -47,6 +45,15 @@ module.exports = {
     node: true,
     es6: true,
   },
+  overrides: [
+    {
+      files: ['tests/**/*.ts', '**/*.spec.ts'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }],
+        'no-console': 'off',
+      },
+    },
+  ],
   ignorePatterns: [
     'dist/',
     'node_modules/',

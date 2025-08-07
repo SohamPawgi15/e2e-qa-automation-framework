@@ -105,7 +105,7 @@ export class RegisterPage extends BasePage {
     email: string,
     telephone: string,
     password: string,
-    confirmPassword: string
+    confirmPassword: string,
   ): Promise<void> {
     await this.fillPersonalDetails(firstName, lastName, email, telephone);
     await this.fillPasswordFields(password, confirmPassword);
@@ -120,7 +120,7 @@ export class RegisterPage extends BasePage {
     email: string,
     telephone: string,
     password: string,
-    confirmPassword: string
+    confirmPassword: string,
   ): Promise<void> {
     await this.fillRegistrationForm(firstName, lastName, email, telephone, password, confirmPassword);
     await this.clickElement(this.newsletterCheckbox);
@@ -137,7 +137,7 @@ export class RegisterPage extends BasePage {
     email: string,
     telephone: string,
     password: string,
-    confirmPassword: string
+    confirmPassword: string,
   ): Promise<void> {
     await this.fillRegistrationForm(firstName, lastName, email, telephone, password, confirmPassword);
     await this.clickElement(this.privacyPolicyCheckbox);

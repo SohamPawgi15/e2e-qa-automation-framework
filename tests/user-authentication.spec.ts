@@ -1,18 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { HomePage } from '@pages/home-page';
-import { LoginPage } from '@pages/login-page';
-import { RegisterPage } from '@pages/register-page';
-import { TestDataGenerator, CustomAssertions, DataValidation } from '@utils/test-helpers';
 
 test.describe('DemoQA Form Validation Tests', () => {
   let homePage: HomePage;
-  let loginPage: LoginPage;
-  let registerPage: RegisterPage;
 
   test.beforeEach(async ({ page }) => {
     homePage = new HomePage(page);
-    loginPage = new LoginPage(page);
-    registerPage = new RegisterPage(page);
   });
 
   test.describe('Form Validation', () => {
@@ -282,7 +275,7 @@ test.describe('DemoQA Form Validation Tests', () => {
   });
 
   test.describe('Performance Tests', () => {
-    test('should load forms within acceptable time', async ({ page }) => {
+    test('should load forms within acceptable time', async ({ page: _page }) => {
       const startTime = Date.now();
       await homePage.navigateToHome();
       await homePage.navigateToCategory('Forms');

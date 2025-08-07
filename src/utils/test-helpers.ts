@@ -68,7 +68,7 @@ export class TestDataGenerator {
     state: string;
     zipCode: string;
     country: string;
-  } {
+    } {
     const streets = ['Main St', 'Oak Ave', 'Pine Rd', 'Elm St', 'Maple Dr'];
     const cities = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'];
     const states = ['NY', 'CA', 'IL', 'TX', 'AZ'];
