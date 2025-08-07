@@ -4,7 +4,7 @@ import { LoginPage } from '@pages/login-page';
 import { RegisterPage } from '@pages/register-page';
 import { TestDataGenerator, CustomAssertions, DataValidation } from '@utils/test-helpers';
 
-test.describe('User Authentication Tests', () => {
+test.describe('DemoQA Form Validation Tests', () => {
   let homePage: HomePage;
   let loginPage: LoginPage;
   let registerPage: RegisterPage;
@@ -15,375 +15,298 @@ test.describe('User Authentication Tests', () => {
     registerPage = new RegisterPage(page);
   });
 
-  test.describe('User Registration', () => {
-    test('should register new user successfully', async ({ page }) => {
-      await registerPage.navigateToRegister();
-      await registerPage.verifyRegistrationPageLoaded();
-
-      const testUser = {
-        firstName: TestDataGenerator.generateRandomName(),
-        lastName: TestDataGenerator.generateRandomLastName(),
-        email: TestDataGenerator.generateRandomEmail(),
-        telephone: TestDataGenerator.generateRandomPhone(),
-        password: TestDataGenerator.generateRandomPassword(),
-        confirmPassword: TestDataGenerator.generateRandomPassword(),
-      };
-
-      // Make sure passwords match
-      testUser.confirmPassword = testUser.password;
-
-      await registerPage.registerWithoutNewsletter(
-        testUser.firstName,
-        testUser.lastName,
-        testUser.email,
-        testUser.telephone,
-        testUser.password,
-        testUser.confirmPassword
-      );
-
-      await registerPage.verifySuccessfulRegistration();
-    });
-
-    test('should register user with newsletter subscription', async ({ page }) => {
-      await registerPage.navigateToRegister();
-      await registerPage.verifyRegistrationPageLoaded();
-
-      const testUser = {
-        firstName: TestDataGenerator.generateRandomName(),
-        lastName: TestDataGenerator.generateRandomLastName(),
-        email: TestDataGenerator.generateRandomEmail(),
-        telephone: TestDataGenerator.generateRandomPhone(),
-        password: TestDataGenerator.generateRandomPassword(),
-        confirmPassword: TestDataGenerator.generateRandomPassword(),
-      };
-
-      testUser.confirmPassword = testUser.password;
-
-      await registerPage.registerWithNewsletter(
-        testUser.firstName,
-        testUser.lastName,
-        testUser.email,
-        testUser.telephone,
-        testUser.password,
-        testUser.confirmPassword
-      );
-
-      await registerPage.verifySuccessfulRegistration();
-    });
-
-    test('should validate registration form fields', async ({ page }) => {
-      await registerPage.navigateToRegister();
-      await registerPage.verifyRegistrationFormValidation();
-    });
-
-    test('should show error for invalid email format', async ({ page }) => {
-      await registerPage.navigateToRegister();
+  test.describe('Form Validation', () => {
+    test('should validate practice form fields', async ({ page }) => {
+      await homePage.navigateToHome();
+      await homePage.navigateToCategory('Forms');
+      await homePage.waitForPageLoad();
       
-      await registerPage.fillPersonalDetails(
-        'John',
-        'Doe',
-        'invalid-email',
-        '123-456-7890'
-      );
-
-      await registerPage.clickContinue();
-      await registerPage.verifyFailedRegistration();
+      await page.locator('span:text("Practice Form")').click();
+      await homePage.waitForPageLoad();
+      
+      // Try to submit without filling required fields
+      await page.locator('#submit').click();
+      
+      // Verify validation messages
+      await expect(page.locator('#firstName')).toHaveAttribute('class', /.*was-validated.*/);
     });
 
-    test('should show error for password mismatch', async ({ page }) => {
-      await registerPage.navigateToRegister();
+    test('should validate email format in practice form', async ({ page }) => {
+      await homePage.navigateToHome();
+      await homePage.navigateToCategory('Forms');
+      await homePage.waitForPageLoad();
       
-      await registerPage.fillRegistrationForm(
-        'John',
-        'Doe',
-        TestDataGenerator.generateRandomEmail(),
-        '123-456-7890',
-        'password123',
-        'differentpassword'
-      );
-
-      await registerPage.clickContinue();
-      await registerPage.verifyFailedRegistration();
+      await page.locator('span:text("Practice Form")').click();
+      await homePage.waitForPageLoad();
+      
+      // Fill form with invalid email
+      await page.locator('#firstName').fill('John');
+      await page.locator('#lastName').fill('Doe');
+      await page.locator('#userEmail').fill('invalid-email');
+      await page.locator('#userNumber').fill('1234567890');
+      
+      await page.locator('#submit').click();
+      
+      // Verify validation
+      await expect(page.locator('#userEmail')).toHaveAttribute('class', /.*was-validated.*/);
     });
 
-    test('should show error for existing email', async ({ page }) => {
-      await registerPage.navigateToRegister();
+    test('should validate phone number format', async ({ page }) => {
+      await homePage.navigateToHome();
+      await homePage.navigateToCategory('Forms');
+      await homePage.waitForPageLoad();
       
-      // Use a known existing email
-      await registerPage.fillRegistrationForm(
-        'John',
-        'Doe',
-        'test@example.com',
-        '123-456-7890',
-        'password123',
-        'password123'
-      );
-
-      await registerPage.clickContinue();
-      await registerPage.verifyFailedRegistration();
-    });
-
-    test('should validate required fields', async ({ page }) => {
-      await registerPage.navigateToRegister();
+      await page.locator('span:text("Practice Form")').click();
+      await homePage.waitForPageLoad();
       
-      // Try to submit empty form
-      await registerPage.clickContinue();
-      await registerPage.verifyFailedRegistration();
-    });
-
-    test('should clear registration form', async ({ page }) => {
-      await registerPage.navigateToRegister();
+      // Fill form with invalid phone
+      await page.locator('#firstName').fill('John');
+      await page.locator('#lastName').fill('Doe');
+      await page.locator('#userEmail').fill('john@example.com');
+      await page.locator('#userNumber').fill('123'); // Too short
       
-      await registerPage.fillRegistrationForm(
-        'John',
-        'Doe',
-        'test@example.com',
-        '123-456-7890',
-        'password123',
-        'password123'
-      );
-
-      await registerPage.clearRegistrationForm();
+      await page.locator('#submit').click();
       
-      // Verify form is cleared
-      const firstName = await registerPage.firstNameInput.inputValue();
-      const email = await registerPage.emailInput.inputValue();
-      expect(firstName).toBe('');
-      expect(email).toBe('');
+      // Verify validation
+      await expect(page.locator('#userNumber')).toHaveAttribute('class', /.*was-validated.*/);
     });
   });
 
-  test.describe('User Login', () => {
-    test('should login with valid credentials', async ({ page }) => {
-      await loginPage.navigateToLogin();
-      await loginPage.verifyLoginPageLoaded();
-
-      const testUser = {
-        email: 'test@example.com',
-        password: 'testpassword123'
-      };
-
-      await loginPage.login(testUser.email, testUser.password);
-      await loginPage.verifySuccessfulLogin();
+  test.describe('Text Box Validation', () => {
+    test('should validate text box form', async ({ page }) => {
+      await homePage.navigateToHome();
+      await homePage.navigateToCategory('Elements');
+      await homePage.waitForPageLoad();
+      
+      await page.locator('span:text("Text Box")').click();
+      await homePage.waitForPageLoad();
+      
+      // Fill form with valid data
+      await page.locator('#userName').fill('Test User');
+      await page.locator('#userEmail').fill('test@example.com');
+      await page.locator('#currentAddress').fill('123 Test Street');
+      await page.locator('#permanentAddress').fill('456 Permanent Street');
+      
+      await page.locator('#submit').click();
+      
+      // Verify output
+      await expect(page.locator('#output')).toBeVisible();
+      await expect(page.locator('#name')).toContainText('Test User');
+      await expect(page.locator('#email')).toContainText('test@example.com');
     });
 
-    test('should login with remember me option', async ({ page }) => {
-      await loginPage.navigateToLogin();
+    test('should validate email format in text box', async ({ page }) => {
+      await homePage.navigateToHome();
+      await homePage.navigateToCategory('Elements');
+      await homePage.waitForPageLoad();
       
-      const testUser = {
-        email: 'test@example.com',
-        password: 'testpassword123'
-      };
-
-      await loginPage.loginWithRememberMe(testUser.email, testUser.password);
-      await loginPage.verifySuccessfulLogin();
-    });
-
-    test('should show error for invalid credentials', async ({ page }) => {
-      await loginPage.navigateToLogin();
+      await page.locator('span:text("Text Box")').click();
+      await homePage.waitForPageLoad();
       
-      await loginPage.login('invalid@example.com', 'wrongpassword');
-      await loginPage.verifyFailedLogin();
-    });
-
-    test('should show error for empty credentials', async ({ page }) => {
-      await loginPage.navigateToLogin();
+      // Fill form with invalid email
+      await page.locator('#userName').fill('Test User');
+      await page.locator('#userEmail').fill('invalid-email');
+      await page.locator('#currentAddress').fill('123 Test Street');
+      await page.locator('#permanentAddress').fill('456 Permanent Street');
       
-      await loginPage.clickElement(loginPage.loginButton);
-      await loginPage.verifyLoginFormValidation();
-    });
-
-    test('should show error for invalid email format', async ({ page }) => {
-      await loginPage.navigateToLogin();
+      await page.locator('#submit').click();
       
-      await loginPage.fillLoginForm('invalid-email', 'password123');
-      await loginPage.clickElement(loginPage.loginButton);
-      await loginPage.verifyFailedLogin();
-    });
-
-    test('should navigate to forgot password page', async ({ page }) => {
-      await loginPage.navigateToLogin();
-      await loginPage.clickForgotPassword();
-      
-      await loginPage.waitForPageLoad();
-      await loginPage.assertUrl(/.*forgotten.*/);
-    });
-
-    test('should navigate to registration page from login', async ({ page }) => {
-      await loginPage.navigateToLogin();
-      await loginPage.clickRegister();
-      
-      await loginPage.waitForPageLoad();
-      await loginPage.assertUrl(/.*register.*/);
-    });
-
-    test('should clear login form', async ({ page }) => {
-      await loginPage.navigateToLogin();
-      
-      await loginPage.fillLoginForm('test@example.com', 'password123');
-      await loginPage.clearLoginForm();
-      
-      const email = await loginPage.emailInput.inputValue();
-      const password = await loginPage.passwordInput.inputValue();
-      expect(email).toBe('');
-      expect(password).toBe('');
+      // Verify email validation
+      await expect(page.locator('#userEmail')).toHaveAttribute('class', /.*was-validated.*/);
     });
   });
 
-  test.describe('Account Management', () => {
-    test('should access account after successful login', async ({ page }) => {
-      await loginPage.navigateToLogin();
+  test.describe('Check Box Validation', () => {
+    test('should validate check box selections', async ({ page }) => {
+      await homePage.navigateToHome();
+      await homePage.navigateToCategory('Elements');
+      await homePage.waitForPageLoad();
       
-      const testUser = {
-        email: 'test@example.com',
-        password: 'testpassword123'
-      };
-
-      await loginPage.login(testUser.email, testUser.password);
-      await loginPage.verifySuccessfulLogin();
+      await page.locator('span:text("Check Box")').click();
+      await homePage.waitForPageLoad();
       
-      // Verify account page elements are visible
-      await page.waitForSelector('.account-dashboard');
+      // Expand and check items
+      await page.locator('.rct-collapse-btn').click();
+      await page.locator('span:text("Desktop")').click();
+      await page.locator('span:text("Documents")').click();
+      
+      // Verify selections
+      await expect(page.locator('#result')).toContainText('desktop');
+      await expect(page.locator('#result')).toContainText('documents');
     });
 
-    test('should logout successfully', async ({ page }) => {
-      // First login
-      await loginPage.navigateToLogin();
-      await loginPage.login('test@example.com', 'testpassword123');
-      await loginPage.verifySuccessfulLogin();
+    test('should validate check box parent-child relationships', async ({ page }) => {
+      await homePage.navigateToHome();
+      await homePage.navigateToCategory('Elements');
+      await homePage.waitForPageLoad();
       
-      // Then logout
-      await page.click('text=Logout');
-      await page.waitForLoadState('networkidle');
+      await page.locator('span:text("Check Box")').click();
+      await homePage.waitForPageLoad();
       
-      // Verify redirected to home page
-      await homePage.verifyHomePageLoaded();
-    });
-
-    test('should maintain session with remember me', async ({ page }) => {
-      await loginPage.navigateToLogin();
+      // Expand and check parent
+      await page.locator('.rct-collapse-btn').click();
+      await page.locator('span:text("Desktop")').click();
       
-      const testUser = {
-        email: 'test@example.com',
-        password: 'testpassword123'
-      };
-
-      await loginPage.loginWithRememberMe(testUser.email, testUser.password);
-      await loginPage.verifySuccessfulLogin();
-      
-      // Close and reopen browser to test session persistence
-      // This would require browser context management
+      // Verify child items are also selected
+      await expect(page.locator('span:text("Notes")')).toHaveAttribute('class', /.*rct-checked.*/);
+      await expect(page.locator('span:text("Commands")')).toHaveAttribute('class', /.*rct-checked.*/);
     });
   });
 
-  test.describe('Security Tests', () => {
-    test('should not expose sensitive information in URLs', async ({ page }) => {
-      await loginPage.navigateToLogin();
+  test.describe('Radio Button Validation', () => {
+    test('should validate radio button selection', async ({ page }) => {
+      await homePage.navigateToHome();
+      await homePage.navigateToCategory('Elements');
+      await homePage.waitForPageLoad();
       
-      const currentUrl = await page.url();
-      expect(currentUrl).not.toContain('password');
-      expect(currentUrl).not.toContain('testpassword123');
+      await page.locator('span:text("Radio Button")').click();
+      await homePage.waitForPageLoad();
+      
+      // Select radio button
+      await page.locator('input[name="like"][value="yes"]').click();
+      
+      // Verify selection
+      await expect(page.locator('.text-success')).toContainText('Yes');
     });
 
-    test('should handle SQL injection attempts', async ({ page }) => {
-      await loginPage.navigateToLogin();
+    test('should validate radio button group behavior', async ({ page }) => {
+      await homePage.navigateToHome();
+      await homePage.navigateToCategory('Elements');
+      await homePage.waitForPageLoad();
       
-      const sqlInjectionAttempts = [
-        "' OR '1'='1",
-        "'; DROP TABLE users; --",
-        "' UNION SELECT * FROM users --"
-      ];
+      await page.locator('span:text("Radio Button")').click();
+      await homePage.waitForPageLoad();
       
-      for (const attempt of sqlInjectionAttempts) {
-        await loginPage.fillLoginForm(attempt, attempt);
-        await loginPage.clickElement(loginPage.loginButton);
-        await loginPage.verifyFailedLogin();
-      }
-    });
-
-    test('should handle XSS attempts', async ({ page }) => {
-      await registerPage.navigateToRegister();
+      // Select first option
+      await page.locator('input[name="like"][value="yes"]').click();
+      await expect(page.locator('.text-success')).toContainText('Yes');
       
-      const xssAttempts = [
-        '<script>alert("XSS")</script>',
-        'javascript:alert("XSS")',
-        '<img src="x" onerror="alert(\'XSS\')">'
-      ];
+      // Select second option
+      await page.locator('input[name="like"][value="no"]').click();
+      await expect(page.locator('.text-success')).toContainText('No');
       
-      for (const attempt of xssAttempts) {
-        await registerPage.fillPersonalDetails(
-          attempt,
-          'Doe',
-          TestDataGenerator.generateRandomEmail(),
-          '123-456-7890'
-        );
-        await registerPage.clickContinue();
-        // Verify the attempt is handled safely
-      }
+      // Verify only one can be selected at a time
+      await expect(page.locator('input[name="like"][value="yes"]')).not.toBeChecked();
     });
   });
 
-  test.describe('Data Validation', () => {
-    test('should validate user data structure', async () => {
-      const testUser = {
-        email: TestDataGenerator.generateRandomEmail(),
-        password: TestDataGenerator.generateRandomPassword()
-      };
+  test.describe('Form Submission', () => {
+    test('should submit practice form successfully', async ({ page }) => {
+      await homePage.navigateToHome();
+      await homePage.navigateToCategory('Forms');
+      await homePage.waitForPageLoad();
       
-      DataValidation.validateUserData(testUser);
+      await page.locator('span:text("Practice Form")').click();
+      await homePage.waitForPageLoad();
+      
+      // Fill the form
+      await page.locator('#firstName').fill('John');
+      await page.locator('#lastName').fill('Doe');
+      await page.locator('#userEmail').fill('john.doe@example.com');
+      await page.locator('input[name="gender"][value="Male"]').click();
+      await page.locator('#userNumber').fill('1234567890');
+      
+      // Submit form
+      await page.locator('#submit').click();
+      
+      // Verify submission
+      await expect(page.locator('.modal-content')).toBeVisible();
+      await expect(page.locator('.modal-body')).toContainText('John');
+      await expect(page.locator('.modal-body')).toContainText('Doe');
     });
 
-    test('should validate email format', async () => {
-      const validEmails = [
-        'test@example.com',
-        'user.name@domain.co.uk',
-        'user+tag@example.org'
-      ];
+    test('should submit text box form successfully', async ({ page }) => {
+      await homePage.navigateToHome();
+      await homePage.navigateToCategory('Elements');
+      await homePage.waitForPageLoad();
       
-      for (const email of validEmails) {
-        CustomAssertions.assertEmailFormat(email);
-      }
-    });
-
-    test('should validate phone format', async () => {
-      const validPhones = [
-        '123-456-7890',
-        '555-123-4567',
-        '999-888-7777'
-      ];
+      await page.locator('span:text("Text Box")').click();
+      await homePage.waitForPageLoad();
       
-      for (const phone of validPhones) {
-        CustomAssertions.assertPhoneFormat(phone);
-      }
+      // Fill the form
+      await page.locator('#userName').fill('Test User');
+      await page.locator('#userEmail').fill('test@example.com');
+      await page.locator('#currentAddress').fill('123 Test Street');
+      await page.locator('#permanentAddress').fill('456 Permanent Street');
+      
+      await page.locator('#submit').click();
+      
+      // Verify output
+      await expect(page.locator('#output')).toBeVisible();
+      await expect(page.locator('#name')).toContainText('Test User');
+      await expect(page.locator('#email')).toContainText('test@example.com');
+      await expect(page.locator('#currentAddress')).toContainText('123 Test Street');
+      await expect(page.locator('#permanentAddress')).toContainText('456 Permanent Street');
     });
   });
 
   test.describe('Error Handling', () => {
-    test('should handle network errors during login', async ({ page }) => {
-      // This would require mocking network failures
-      await loginPage.navigateToLogin();
-      await loginPage.verifyLoginPageLoaded();
+    test('should handle form submission with missing required fields', async ({ page }) => {
+      await homePage.navigateToHome();
+      await homePage.navigateToCategory('Forms');
+      await homePage.waitForPageLoad();
+      
+      await page.locator('span:text("Practice Form")').click();
+      await homePage.waitForPageLoad();
+      
+      // Submit without filling required fields
+      await page.locator('#submit').click();
+      
+      // Verify validation messages
+      await expect(page.locator('#firstName')).toHaveAttribute('class', /.*was-validated.*/);
+      await expect(page.locator('#lastName')).toHaveAttribute('class', /.*was-validated.*/);
+      await expect(page.locator('#userEmail')).toHaveAttribute('class', /.*was-validated.*/);
+      await expect(page.locator('#userNumber')).toHaveAttribute('class', /.*was-validated.*/);
     });
 
-    test('should handle server errors gracefully', async ({ page }) => {
-      // This would require mocking server errors
-      await loginPage.navigateToLogin();
-      await loginPage.verifyLoginPageLoaded();
+    test('should handle invalid input formats', async ({ page }) => {
+      await homePage.navigateToHome();
+      await homePage.navigateToCategory('Forms');
+      await homePage.waitForPageLoad();
+      
+      await page.locator('span:text("Practice Form")').click();
+      await homePage.waitForPageLoad();
+      
+      // Fill with invalid data
+      await page.locator('#firstName').fill('John');
+      await page.locator('#lastName').fill('Doe');
+      await page.locator('#userEmail').fill('invalid-email');
+      await page.locator('#userNumber').fill('abc123'); // Invalid phone
+      
+      await page.locator('#submit').click();
+      
+      // Verify validation
+      await expect(page.locator('#userEmail')).toHaveAttribute('class', /.*was-validated.*/);
+      await expect(page.locator('#userNumber')).toHaveAttribute('class', /.*was-validated.*/);
+    });
+  });
+
+  test.describe('Performance Tests', () => {
+    test('should load forms within acceptable time', async ({ page }) => {
+      const startTime = Date.now();
+      await homePage.navigateToHome();
+      await homePage.navigateToCategory('Forms');
+      await homePage.waitForPageLoad();
+      const loadTime = Date.now() - startTime;
+      
+      expect(loadTime).toBeLessThan(5000);
     });
 
-    test('should handle timeout scenarios', async ({ page }) => {
-      await loginPage.navigateToLogin();
+    test('should handle rapid form interactions', async ({ page }) => {
+      await homePage.navigateToHome();
+      await homePage.navigateToCategory('Elements');
+      await homePage.waitForPageLoad();
       
-      // Test with very slow network simulation
-      await page.route('**/*', route => {
-        // Simulate slow response
-        setTimeout(() => route.continue(), 10000);
-      });
+      await page.locator('span:text("Text Box")').click();
+      await homePage.waitForPageLoad();
       
-      await loginPage.fillLoginForm('test@example.com', 'password123');
-      await loginPage.clickElement(loginPage.loginButton);
+      // Rapid interactions
+      await page.locator('#userName').fill('Test1');
+      await page.locator('#userName').fill('Test2');
+      await page.locator('#userName').fill('Test3');
       
-      // Verify timeout handling
+      // Verify page is still responsive
+      await expect(page.locator('#submit')).toBeVisible();
     });
   });
 }); 

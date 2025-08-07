@@ -15,6 +15,11 @@ export abstract class BasePage {
     await this.waitForPageLoad();
   }
 
+  async navigateTo(path: string): Promise<void> {
+    await this.page.goto(path);
+    await this.waitForPageLoad();
+  }
+
   async clickElement(locator: Locator): Promise<void> {
     await locator.click();
   }

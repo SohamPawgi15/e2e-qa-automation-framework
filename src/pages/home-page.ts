@@ -14,14 +14,12 @@ export class HomePage extends BasePage {
   readonly wishlistLink: Locator;
 
   // Navigation locators
-  readonly desktopMenu: Locator;
-  readonly laptopsNotebooksMenu: Locator;
-  readonly componentsMenu: Locator;
-  readonly tabletsMenu: Locator;
-  readonly softwareMenu: Locator;
-  readonly phonesPDAsMenu: Locator;
-  readonly camerasMenu: Locator;
-  readonly mp3PlayersMenu: Locator;
+  readonly elementsMenu: Locator;
+  readonly formsMenu: Locator;
+  readonly alertsFrameWindowsMenu: Locator;
+  readonly widgetsMenu: Locator;
+  readonly interactionsMenu: Locator;
+  readonly bookStoreMenu: Locator;
 
   // Featured products locators
   readonly featuredProductsSection: Locator;
@@ -39,37 +37,35 @@ export class HomePage extends BasePage {
   constructor(page: Page) {
     super(page);
     
-    // Header locators
-    this.logo = page.locator('#logo');
-    this.searchInput = page.locator('#search input[name="search"]');
-    this.searchButton = page.locator('#search button');
-    this.cartButton = page.locator('#cart');
-    this.cartCount = page.locator('#cart-total');
+    // Header locators - updated for demoqa.com
+    this.logo = page.locator('.main-header');
+    this.searchInput = page.locator('#searchBox');
+    this.searchButton = page.locator('.input-group-text');
+    this.cartButton = page.locator('.btn-primary');
+    this.cartCount = page.locator('.badge');
     this.myAccountDropdown = page.locator('.dropdown-toggle');
     this.loginLink = page.locator('a:text("Login")');
     this.registerLink = page.locator('a:text("Register")');
     this.wishlistLink = page.locator('#wishlist-total');
 
-    // Navigation locators
-    this.desktopMenu = page.locator('a:text("Desktops")');
-    this.laptopsNotebooksMenu = page.locator('a:text("Laptops & Notebooks")');
-    this.componentsMenu = page.locator('a:text("Components")');
-    this.tabletsMenu = page.locator('a:text("Tablets")');
-    this.softwareMenu = page.locator('a:text("Software")');
-    this.phonesPDAsMenu = page.locator('a:text("Phones & PDAs")');
-    this.camerasMenu = page.locator('a:text("Cameras")');
-    this.mp3PlayersMenu = page.locator('a:text("MP3 Players")');
+    // Navigation locators - updated for demoqa.com
+    this.elementsMenu = page.locator('div:text("Elements")');
+    this.formsMenu = page.locator('div:text("Forms")');
+    this.alertsFrameWindowsMenu = page.locator('div:text("Alerts, Frame & Windows")');
+    this.widgetsMenu = page.locator('div:text("Widgets")');
+    this.interactionsMenu = page.locator('div:text("Interactions")');
+    this.bookStoreMenu = page.locator('div:text("Book Store Application")');
 
-    // Featured products locators
-    this.featuredProductsSection = page.locator('#content .row');
-    this.productCards = page.locator('.product-thumb');
-    this.addToCartButtons = page.locator('button[onclick*="cart.add"]');
-    this.addToWishlistButtons = page.locator('button[onclick*="wishlist.add"]');
-    this.productNames = page.locator('.product-thumb h4 a');
-    this.productPrices = page.locator('.product-thumb .price');
+    // Featured products locators - updated for demoqa.com
+    this.featuredProductsSection = page.locator('.category-cards');
+    this.productCards = page.locator('.card');
+    this.addToCartButtons = page.locator('.btn-primary');
+    this.addToWishlistButtons = page.locator('.btn-secondary');
+    this.productNames = page.locator('.card-body h5');
+    this.productPrices = page.locator('.card-body p');
 
-    // Banner and slider locators
-    this.bannerSlider = page.locator('#slideshow0');
+    // Banner and slider locators - updated for demoqa.com
+    this.bannerSlider = page.locator('.banner-image');
     this.sliderNextButton = page.locator('.swiper-button-next');
     this.sliderPrevButton = page.locator('.swiper-button-prev');
   }
@@ -78,7 +74,7 @@ export class HomePage extends BasePage {
    * Navigate to home page
    */
   async navigateToHome(): Promise<void> {
-    await this.navigateTo('/');
+    await this.page.goto('https://demoqa.com');
     await this.waitForPageLoad();
   }
 
@@ -200,9 +196,9 @@ export class HomePage extends BasePage {
    * Verify home page is loaded
    */
   async verifyHomePageLoaded(): Promise<void> {
-    await this.assertElementVisible(this.logo);
-    await this.assertElementVisible(this.searchInput);
-    await this.assertElementVisible(this.cartButton);
+    await this.assertElementVisible(this.bannerSlider);
+    await this.assertElementVisible(this.featuredProductsSection);
+    await this.assertElementVisible(this.productCards.first());
   }
 
   /**

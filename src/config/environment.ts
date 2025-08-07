@@ -38,7 +38,7 @@ export class Environment {
 
   private constructor() {
     this.config = {
-      baseUrl: process.env.BASE_URL || 'https://automationexercise.com',
+      baseUrl: process.env.BASE_URL || 'https://demoqa.com',
       testUser: {
         email: process.env.TEST_USER_EMAIL || 'test@example.com',
         password: process.env.TEST_USER_PASSWORD || 'testpassword123',

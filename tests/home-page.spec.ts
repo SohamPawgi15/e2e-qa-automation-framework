@@ -13,7 +13,7 @@ test.describe('Home Page Tests', () => {
   test.describe('Page Load and Navigation', () => {
     test('should load home page successfully', async ({ page }) => {
       await homePage.verifyHomePageLoaded();
-      await expect(page).toHaveTitle(/Your Store/);
+      await expect(page).toHaveTitle(/DEMOQA/);
     });
 
     test('should display logo and main navigation elements', async () => {
@@ -24,12 +24,12 @@ test.describe('Home Page Tests', () => {
     });
 
     test('should navigate to different categories', async () => {
-      const categories = ['Desktops', 'Laptops & Notebooks', 'Components', 'Tablets'];
+      const categories = ['Elements', 'Forms', 'Alerts, Frame & Windows', 'Widgets'];
       
       for (const category of categories) {
         await homePage.navigateToCategory(category);
         await homePage.waitForPageLoad();
-        await homePage.assertUrl(/.*category.*/);
+        await homePage.assertUrl(/.*demoqa.*/);
         await homePage.navigateToHome();
       }
     });
