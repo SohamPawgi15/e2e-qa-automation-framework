@@ -32,6 +32,22 @@ export abstract class BasePage {
     return await locator.textContent() || '';
   }
 
+  async getAttribute(locator: Locator, attribute: string): Promise<string | null> {
+    return await locator.getAttribute(attribute);
+  }
+
+  async selectOption(locator: Locator, value: string): Promise<void> {
+    await locator.selectOption(value);
+  }
+
+  async waitForUrl(url: string | RegExp): Promise<void> {
+    await this.page.waitForURL(url);
+  }
+
+  async takeScreenshot(name: string): Promise<void> {
+    await this.page.screenshot({ path: `screenshots/${name}.png` });
+  }
+
   async isElementVisible(locator: Locator): Promise<boolean> {
     return await locator.isVisible();
   }
