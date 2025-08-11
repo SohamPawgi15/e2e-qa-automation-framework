@@ -57,6 +57,7 @@ export abstract class BasePage {
       await this.page.waitForLoadState('domcontentloaded', { timeout: 10000 });
       await this.page.waitForLoadState('networkidle', { timeout: 5000 });
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log('Network idle timeout, continuing with test...');
     }
   }

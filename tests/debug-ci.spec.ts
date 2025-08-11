@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 
+/* eslint-disable no-console */
 /**
  * Minimal Debug Test Suite for CI Environment
  * This test helps identify the exact issue causing timeouts
@@ -11,7 +12,7 @@ test.describe('CI Debug Tests', () => {
     console.log('📊 Environment:', {
       BASE_URL: process.env.BASE_URL || 'https://demoqa.com',
       CI: process.env.CI,
-      NODE_ENV: process.env.NODE_ENV
+      NODE_ENV: process.env.NODE_ENV,
     });
     
     try {
